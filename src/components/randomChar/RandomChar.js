@@ -10,7 +10,7 @@ import mjolnir from '../../resources/img/mjolnir.png';
 const RandomChar = () => {
   // состояние компонента !
   const [char, setChar] = useState({});
-  const { loading, error, getCharacter } = useMarvelService();
+  const { loading, error, getCharacter, clearError } = useMarvelService();
 
   useEffect(() => {
     updateChar();
@@ -29,6 +29,7 @@ const RandomChar = () => {
 
   // функция загрузки случайного персонажа
   const updateChar = () => {
+    clearError();
     const id = Math.floor(Math.random() * 20) + 1;
   getCharacter(id) // запрос на сервер
   .then(onCharLoaded) // при успехе
