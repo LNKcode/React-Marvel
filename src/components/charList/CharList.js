@@ -1,5 +1,6 @@
 
 import {useState, useEffect, useRef} from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
@@ -53,22 +54,25 @@ const CharList = (props) => {
 
     // Этот метод создан для оптимизации, 
     // чтобы не помещать такую конструкцию в метод render
-    function renderItems(arr) {
-        const items =  arr.map((item, i) => {
-            let imgStyle = {'objectFit' : 'cover'};
-            if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
-                imgStyle = {'objectFit' : 'unset'};
-            }
-            
-            return (
-                <li 
+function renderItems(arr) {
+    const items = arr.map((item, i) => {
+        let imgStyle = { 'objectFit': 'cover' };
+        if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+            imgStyle = { 'objectFit': 'unset' };
+        }
+
+        return (
+            <CSSTransition
+                key={item.id}
+                timeout={500}
+                classNames="char__item">
+                <li
                     className="char__item"
                     tabIndex={0}
                     ref={el => itemRefs.current[i] = el}
-                    key={item.id}
                     onClick={() => {
                         props.onCharSelected(item.id);
-                        focusOnItem(i)
+                        focusOnItem(i);
                     }}
                     onKeyDown={(e) => {
                         if (e.key === ' ' || e.key === "Enter") {
@@ -76,18 +80,19 @@ const CharList = (props) => {
                             focusOnItem(i);
                         }
                     }}>
-                        <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
-                        <div className="char__name">{item.name}</div>
+                    <img src={item.thumbnail} alt={item.name} style={imgStyle} />
+                    <div className="char__name">{item.name}</div>
                 </li>
-            )
-        });
-        // А эта конструкция вынесена для центровки спиннера/ошибки
-        return (
-            <ul className="char__grid">
-                {items}
-            </ul>
+            </CSSTransition>
         )
-    }
+    });
+
+    return (
+        <TransitionGroup component="ul" className="char__grid">
+            {items}
+        </TransitionGroup>
+    )
+}
 
     
     const items = renderItems(charList);
